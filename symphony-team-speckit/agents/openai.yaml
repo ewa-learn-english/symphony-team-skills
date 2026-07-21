@@ -1,0 +1,4 @@
+interface:
+  display_name: "Symphony Team SpecKit"
+  short_description: "Run staged SpecKit delivery in Codex"
+  default_prompt: "Use $symphony-team-speckit to deliver this feature through coordinated Codex threads."

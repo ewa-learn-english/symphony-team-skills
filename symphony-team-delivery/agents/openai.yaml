@@ -1,0 +1,4 @@
+interface:
+  display_name: "Symphony Team Delivery"
+  short_description: "Run a reviewed delivery team in Codex"
+  default_prompt: "Use $symphony-team-delivery to deliver this repository task through coordinated Codex threads."
