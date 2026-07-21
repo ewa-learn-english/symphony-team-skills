@@ -16,4 +16,4 @@ Determine whether `spec.md` is a faithful, bounded, testable representation of t
 
 Return exactly one disposition in the thread's final response: `not ready` with ordered findings and acceptable resolution, or `ready` with accepted assumptions and residual risk. Report `ready` only for the final reviewed version of `spec.md`.
 
-Return findings to `spec-author` and continue this thread for re-review. Do not repeat an unchanged review or proceed to planning yourself. Work read-only in the shared local checkout and preserve unrelated changes.
+Return findings to `spec-author` and continue this thread for re-review. Do not repeat an unchanged review or proceed to planning yourself. Work read-only in the shared current checkout and preserve unrelated changes.

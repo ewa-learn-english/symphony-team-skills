@@ -30,6 +30,7 @@ Before each first activation, read the role's complete prompt from `prompts/` an
 - the feature directory, stage or implementation phase, and task IDs;
 - retained inputs and their exact paths;
 - the required artifact, verdict, or implementation evidence;
+- any accepted requirements or proof deferred to a later phase;
 - the exact stop or block condition;
 - a reminder that the shared current checkout may contain unrelated changes that must be preserved;
 - in worktree mode, an instruction to treat this assignment as authoritative and ignore inherited manager history outside it.
@@ -73,6 +74,8 @@ For an initial feature, preserve this order:
 3. `tasks-author` writes dependency-ordered tasks grouped into coherent implementation phases; inspect the author's evidence and return material defects to the same thread.
 4. For each ready phase, assign the whole phase to a new `implementation-worker` thread. At phase end obtain a ready disposition from a new `implementation-reviewer` thread before starting the next phase.
 5. After all phases, confirm that retained artifacts and implementation evidence agree before recording ready. Do not introduce another review or acceptance role.
+
+Each phase disposition covers only that assigned phase. Keep requirements and proof assigned to later accepted phases visible as downstream dependencies; only the manager's final ready decision covers the complete feature.
 
 Do not collapse or skip specification, plan, tasks, or the specification and plan reviews. Do not insert review or test gates between individual tasks inside an implementation phase. On a successor audit cycle, treat human feedback as a delta: reactivate only affected authors, phases, and downstream reviews instead of replaying the whole initial workflow.
 

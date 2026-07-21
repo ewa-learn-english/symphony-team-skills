@@ -30,6 +30,7 @@ Before each first activation, read the role's complete prompt from `prompts/` an
 - the role's outcome and bounded scope;
 - retained inputs such as an accepted plan, diff, findings, or proof;
 - the required result and evidence;
+- any required work or evidence deferred to a later participant;
 - the exact stop or block condition;
 - a reminder that the shared current checkout may contain unrelated changes that must be preserved;
 - in worktree mode, an instruction to treat this assignment as authoritative and ignore inherited manager history outside it.
@@ -66,10 +67,11 @@ Do not override the model or thinking on later follow-up messages.
 - For a straightforward change, activate `implementation-worker` and then `implementation-reviewer`.
 - Activate `plan-author` only when the request explicitly requires a retained plan or when material ownership, design, dependencies, or sequencing would otherwise be decided during implementation. Activate `plan-reviewer` when that plan contains a material design or ownership decision.
 - Activate `tester` only when dedicated behavioral verification adds evidence that implementation and review cannot provide, or when the request explicitly requires it.
+- When `tester` owns required evidence, state that downstream ownership in every affected worker and reviewer assignment. Run `tester` after implementation review so the evidence covers reviewed behavior; if `tester` changes code, reactivate `implementation-reviewer`.
 - Follow task-specific workflow instructions that require planning, fresh conversations, bounded implementation slices, or independent test surfaces without inventing another role or schema.
 - Use a new role thread for each independent implementation or verification scope. In worktree mode this is a same-directory fork with inherited completed history, so keep its assignment self-contained. Continue the same thread for fixes and re-review of that scope.
 
-Only the manager records workflow decisions. Do not repeat unchanged work or add roles as ceremony. Return implementation defects to `implementation-worker`; return material plan defects to `plan-author`; return an unchanged fix to the same reviewer for confirmation.
+Only the manager records workflow decisions. A participant reports readiness for its assigned scope; only the manager's final ready decision covers the complete request. Do not repeat unchanged work or add roles as ceremony. Return implementation defects to `implementation-worker`; return material plan defects to `plan-author`; return an unchanged fix to the same reviewer for confirmation.
 
 ## Scope and commits
 

@@ -6,4 +6,4 @@ Use one coherent implementation scope by default. Split only for a real dependen
 
 Return the plan in the thread's final response. Persist it only when the assignment or repository workflow names an exact plan path. Report unresolved requirement or ownership decisions as blockers. Otherwise report the plan ready for the manager or `plan-reviewer`.
 
-Work in the shared local checkout, preserve unrelated changes, and never push or create a pull request.
+Work in the shared current checkout, preserve unrelated changes, and never push or create a pull request.

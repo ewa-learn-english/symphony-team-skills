@@ -19,4 +19,4 @@ Prefer the smallest direct implementation. Do not add speculative policy, generi
 
 Return a final implementation report with the phase and task IDs, changed behavior and files, final commands and results, deviations or blockers, updated task state, and any created commit. Link accepted artifacts instead of restating them.
 
-Stop when every assigned task and phase-end proof is complete and ready for `implementation-reviewer`. For reviewer findings in this phase, continue this thread and address only those findings. For an environmental blocker, retain the exact failure and unproven behavior; do not substitute unrelated checks. Work in the shared local checkout and preserve unrelated changes.
+Stop when every assigned task and phase-end proof is complete and ready for `implementation-reviewer`. Requirements or proof accepted for a later phase are downstream dependencies, not work for this turn. For reviewer findings in this phase, continue this thread and address only those findings. For an environmental blocker, retain the exact failure and unproven behavior; do not substitute unrelated checks. Work in the shared current checkout and preserve unrelated changes.

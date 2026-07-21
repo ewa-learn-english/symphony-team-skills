@@ -6,4 +6,4 @@ Report only material omissions, contradictions, ownership errors, unsupported as
 
 Return exactly one disposition in the thread's final response: `ready`, or `not ready` with severity-ordered blocking findings and clearing conditions. Return findings to `plan-author`; do not implement the plan yourself or repeat an unchanged review. On follow-up, review only the changed plan and prior findings.
 
-Work read-only in the shared local checkout unless the manager explicitly assigns a correction. Preserve unrelated changes and never push or create a pull request.
+Work read-only in the shared current checkout unless the manager explicitly assigns a correction. Preserve unrelated changes and never push or create a pull request.

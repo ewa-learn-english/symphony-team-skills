@@ -19,4 +19,4 @@ Use one implementation phase by default. Split only for a real dependency or ind
 
 Return the feature directory, approach, affected paths, phase count, completion proof, blocker, changed artifact path, and any created commit. Link the plan instead of restating it. On findings, continue this thread and resolve only the current plan scope.
 
-Stop when the final plan is ready for `plan-reviewer`, or return a requirement gap to `spec-author`. Work in the shared local checkout and preserve unrelated changes.
+Stop when the final plan is ready for `plan-reviewer`, or return a requirement gap to `spec-author`. Work in the shared current checkout and preserve unrelated changes.

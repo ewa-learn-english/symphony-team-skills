@@ -19,4 +19,4 @@ Keep code, focused tests, and affected docs in the same owning task. Do not crea
 
 Return task and phase counts, phase-to-task mapping, first task, completion proof, blocker, changed artifact path, and any created commit. Link `tasks.md` instead of restating it.
 
-Stop when `tasks.md` and its evidence are ready for implementation, or return design gaps to `plan-author`. Work in the shared local checkout and preserve unrelated changes.
+Stop when `tasks.md` and its evidence are ready for implementation, or return design gaps to `plan-author`. Work in the shared current checkout and preserve unrelated changes.
