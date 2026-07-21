@@ -11,16 +11,17 @@ The skills are adapted from the Team Delivery and Team SpecKit role prompts. The
 | `symphony-team-delivery` | Selective planning, implementation, implementation review, and optional dedicated testing. |
 | `symphony-team-speckit` | Specification, spec review, planning, plan review, tasks, and reviewed implementation phases. |
 
-Each `SKILL.md` is the team manager. Role prompts live in the adjacent `prompts/` directory. The manager creates every first role activation as a separate Codex thread, waits for completion with `wait_threads`, and sends fixes or re-review back to the same thread.
+Each `SKILL.md` is the team manager. Role prompts live in the adjacent `prompts/` directory. The manager creates every first role activation as a separate Codex thread, keeps it in the manager's current checkout, waits for completion with `wait_threads`, and sends fixes or re-review back to the same thread.
 
 ## Requirements
 
 - Codex App with Codex thread coordination tools.
-- The target repository saved as a Codex project. Participant threads use its local environment and share the current checkout.
+- In local mode, the target repository saved as a Codex project.
+- In worktree mode, the manager thread already running in the worktree that should receive the changes.
 - Access to the models configured by the selected skill: `gpt-5.6-sol`, `gpt-5.6-terra`, and `gpt-5.6-luna`, with the recorded `high` or `xhigh` thinking levels.
 - For `symphony-team-speckit`, a working SpecKit installation in the target repository.
 
-These workflows intentionally stay local. Participants may create commits when useful, but they do not push, create pull requests, deploy, or change unrelated work.
+Participants may create commits when useful, but they do not push, create pull requests, deploy, or change unrelated work.
 
 ## Install
 
@@ -64,6 +65,15 @@ Use $symphony-team-speckit to deliver this feature through SpecKit: <request>
 ```
 
 Explicit invocation authorizes the manager to create the participant threads required by that workflow. It does not expand permission to publish or deploy changes.
+
+## Checkout behavior
+
+| Manager environment | Participant creation | Shared checkout |
+| --- | --- | --- |
+| Primary local checkout | `create_thread` with `environment.type: local` | Saved project's local checkout |
+| Existing Codex worktree | `fork_thread` with `environment.type: same-directory`, then a role prompt through `send_message_to_thread` | The manager's exact worktree |
+
+Same-directory forks inherit the manager thread's completed history but not its active turn. Managers therefore send a complete, authoritative role assignment after every fork. Write-capable participants run sequentially in a shared worktree.
 
 ## Workflow notes
 

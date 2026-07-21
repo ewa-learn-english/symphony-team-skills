@@ -1,6 +1,6 @@
 ---
 name: symphony-team-delivery
-description: Coordinate the standalone Team Delivery workflow in Codex App by creating role-specific Codex threads for planning, implementation, review, and optional testing. Use when the user explicitly asks to run Team Delivery or invokes $symphony-team-delivery for a repository task that should end as reviewed, mergeable local work.
+description: Coordinate the standalone Team Delivery workflow in Codex App by creating or forking role-specific Codex threads for planning, implementation, review, and optional testing in a local checkout or existing worktree. Use when the user explicitly asks to run Team Delivery or invokes $symphony-team-delivery for a repository task that should end as reviewed, mergeable work.
 ---
 
 # Team Delivery Manager
@@ -14,9 +14,10 @@ Run this workflow only in Codex App; do not translate it to generic subagents or
 ## Start the run
 
 1. Capture the user's complete request, the current workspace, repository rules, and relevant existing changes.
-2. Use the Codex thread tools. Resolve the current saved project with `list_projects` before creating participants.
-3. Create every participant in that project with `environment.type: local` so all roles share the current checkout. Do not create a projectless thread or worktree.
-4. If the current repository cannot be resolved to a saved Codex project, stop and tell the user what must be configured. Do not silently replace participant threads with subagents.
+2. Determine whether the manager thread runs in the primary local checkout or a linked worktree. Prefer explicit Codex environment context; otherwise compare `git rev-parse --path-format=absolute --git-dir` with `git rev-parse --path-format=absolute --git-common-dir`. Different paths mean worktree mode.
+3. In local mode, resolve the current saved project with `list_projects` and create every participant in that project with `environment.type: local`.
+4. In worktree mode, fork the current manager thread with `environment.type: same-directory` for every new participant. Do not use `create_thread`, create another worktree, or redirect participants to the primary local checkout.
+5. Stop with the concrete prerequisite when local mode cannot resolve the saved project. Do not silently replace participant threads with subagents.
 
 An explicit request to run this skill authorizes the participant threads required by this workflow. It does not authorize pushing, creating a pull request, deployment, or unrelated repository changes.
 
@@ -30,9 +31,10 @@ Before each first activation, read the role's complete prompt from `prompts/` an
 - retained inputs such as an accepted plan, diff, findings, or proof;
 - the required result and evidence;
 - the exact stop or block condition;
-- a reminder that the shared local checkout may contain unrelated changes that must be preserved.
+- a reminder that the shared current checkout may contain unrelated changes that must be preserved;
+- in worktree mode, an instruction to treat this assignment as authoritative and ignore inherited manager history outside it.
 
-Use these exact settings on `create_thread`:
+Use these exact participant settings:
 
 | Participant | Prompt | Model | Thinking |
 | --- | --- | --- | --- |
@@ -42,17 +44,22 @@ Use these exact settings on `create_thread`:
 | `implementation-reviewer` | `prompts/implementation-reviewer.md` | `gpt-5.6-sol` | `xhigh` |
 | `tester` | `prompts/tester.md` | `gpt-5.6-luna` | `high` |
 
-Pass the table's value as `model` and `thinking`. Do not override the model or thinking on follow-up messages.
+In local mode, pass the complete prompt, table `model`, and table `thinking` to `create_thread`.
+
+In worktree mode, call `fork_thread` with `environment.type: same-directory` and omit `threadId` so the current manager thread is the source. Then immediately call `send_message_to_thread` for the returned child `threadId` with the complete prompt, table `model`, and table `thinking`. A fork copies only completed history, not the manager's active turn, so never rely on inherited context for the assignment.
+
+Do not override the model or thinking on later follow-up messages.
 
 ## Subscribe and coordinate
 
-1. Keep the `threadId`, `hostId`, role, and latest wait cursor for every participant.
-2. Immediately subscribe after creation with `wait_threads`. When independent participants are active, wait for them in one call; otherwise wait for the current dependency.
+1. Keep the `threadId`, optional `hostId`, role, checkout mode, and latest wait cursor for every participant.
+2. Immediately subscribe with `wait_threads` after the participant has received its initial prompt. When independent read-only participants are active, wait for them in one call; otherwise wait for the current dependency.
 3. Pass each returned cursor as `afterCursor` on the next wait. A timeout is not completion; continue waiting without narrating unchanged snapshots.
 4. Treat a completed thread's final response as its handoff. Use `read_thread` only when the handoff omits context required for a decision.
 5. If a thread needs attention, answer with `send_message_to_thread` when the answer is already established. Ask the user only when the missing decision materially changes scope or safety.
 6. Send fixes and re-review to the same role thread with `send_message_to_thread`. Create a new thread only for a genuinely independent implementation or verification scope.
-7. Never mark work ready while a required participant thread is still running, needs attention, or has blocking findings.
+7. In worktree mode, never run two write-capable participant turns concurrently in the shared checkout.
+8. Never mark work ready while a required participant thread is still running, needs attention, or has blocking findings.
 
 ## Workflow
 
@@ -60,7 +67,7 @@ Pass the table's value as `model` and `thinking`. Do not override the model or t
 - Activate `plan-author` only when the request explicitly requires a retained plan or when material ownership, design, dependencies, or sequencing would otherwise be decided during implementation. Activate `plan-reviewer` when that plan contains a material design or ownership decision.
 - Activate `tester` only when dedicated behavioral verification adds evidence that implementation and review cannot provide, or when the request explicitly requires it.
 - Follow task-specific workflow instructions that require planning, fresh conversations, bounded implementation slices, or independent test surfaces without inventing another role or schema.
-- Use a fresh thread for each independent implementation or verification scope. Continue the same thread for fixes and re-review of that scope.
+- Use a new role thread for each independent implementation or verification scope. In worktree mode this is a same-directory fork with inherited completed history, so keep its assignment self-contained. Continue the same thread for fixes and re-review of that scope.
 
 Only the manager records workflow decisions. Do not repeat unchanged work or add roles as ceremony. Return implementation defects to `implementation-worker`; return material plan defects to `plan-author`; return an unchanged fix to the same reviewer for confirmation.
 
