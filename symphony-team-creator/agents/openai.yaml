@@ -1,0 +1,4 @@
+interface:
+  display_name: "Symphony Team Creator"
+  short_description: "Create or update custom Codex teams"
+  default_prompt: "Use $symphony-team-creator to draft a custom Codex team or an update for my approval."

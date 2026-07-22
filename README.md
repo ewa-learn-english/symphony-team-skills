@@ -1,31 +1,39 @@
 # Symphony Team Skills
 
-Two standalone, Codex-only skills that run software-delivery workflows through coordinated Codex App threads.
+Standalone, Codex-only skills for designing and running workflows through coordinated Codex App threads.
 
-The skills are adapted from the Team Delivery and Team SpecKit role prompts. They do not require, call, or integrate with the Symphony runtime.
+Team Delivery and Team SpecKit are adapted from their corresponding role prompts. The creator is a generic team designer. None of the skills require, call, or integrate with the Symphony runtime.
 
 ## Included skills
 
 | Skill | Workflow |
 | --- | --- |
+| `symphony-team-creator` | Draft, install, or update a custom team after explicit user approval. |
 | `symphony-team-delivery` | Selective planning, implementation, implementation review, and optional dedicated testing. |
 | `symphony-team-speckit` | Specification, spec review, planning, plan review, tasks, and reviewed implementation phases. |
 
-Each `SKILL.md` is the team manager. Role prompts live in the adjacent `prompts/` directory. The manager creates every first role activation as a separate Codex thread, keeps it in the manager's current checkout, waits for completion with `wait_threads`, and sends fixes or re-review back to the same thread.
+The creator proposes a team name, roles, model and reasoning settings, dependencies, and readiness contract before writing anything. For updates it first inspects the installed team and presents the exact delta and resulting team. Only explicit approval allows it to create or modify a self-contained team skill in the standard user skills directory.
+
+In generated and included teams, `SKILL.md` is the manager and role prompts live in `prompts/`. The manager creates every first role activation as a separate Codex thread, keeps it in the current checkout, waits for completion with `wait_threads`, and sends fixes or re-review back to the same thread.
 
 ## Requirements
 
-- Codex App with Codex thread coordination tools.
+- Codex with filesystem access to design and install a team with `symphony-team-creator`.
+- Codex App with thread coordination tools to run a team.
 - In local mode, the target repository saved as a Codex project.
 - In worktree mode, the manager thread already running in the worktree that should receive the changes.
-- Access to the models configured by the selected skill: `gpt-5.6-sol`, `gpt-5.6-terra`, and `gpt-5.6-luna`, with the recorded `high` or `xhigh` thinking levels.
+- Access to the exact models and reasoning efforts configured by the selected or generated team. The included Delivery and SpecKit teams currently use `gpt-5.6-sol`, `gpt-5.6-terra`, and `gpt-5.6-luna`.
 - For `symphony-team-speckit`, a working SpecKit installation in the target repository.
 
-Participants may create commits when useful, but they do not push, create pull requests, deploy, or change unrelated work.
+Generated teams follow the action boundaries approved in their draft. Participants in the included Delivery and SpecKit teams may create commits when useful, but they do not push, create pull requests, deploy, or change unrelated work.
 
 ## Install
 
-Ask Codex to install either GitHub directory with `$skill-installer`:
+Ask Codex to install a GitHub directory with `$skill-installer`:
+
+```text
+Use $skill-installer to install https://github.com/ewa-learn-english/symphony-team-skills/tree/main/symphony-team-creator
+```
 
 ```text
 Use $skill-installer to install https://github.com/ewa-learn-english/symphony-team-skills/tree/main/symphony-team-delivery
@@ -35,26 +43,21 @@ Use $skill-installer to install https://github.com/ewa-learn-english/symphony-te
 Use $skill-installer to install https://github.com/ewa-learn-english/symphony-team-skills/tree/main/symphony-team-speckit
 ```
 
-Alternatively, clone the repository and link both skill folders into the user skill directory:
-
-```bash
-git clone https://github.com/ewa-learn-english/symphony-team-skills.git "$HOME/.agents/symphony-team-skills"
-mkdir -p "$HOME/.agents/skills"
-ln -s "$HOME/.agents/symphony-team-skills/symphony-team-delivery" "$HOME/.agents/skills/symphony-team-delivery"
-ln -s "$HOME/.agents/symphony-team-skills/symphony-team-speckit" "$HOME/.agents/skills/symphony-team-speckit"
-```
-
-Codex detects skill changes automatically. Restart Codex if the skills do not appear. See the official [Codex skills documentation](https://developers.openai.com/codex/skills) for discovery locations and invocation behavior.
-
-To update a linked installation:
-
-```bash
-git -C "$HOME/.agents/symphony-team-skills" pull --ff-only
-```
+The installed skill becomes available on the next Codex turn. Restart Codex if it does not appear. See the official [Codex skills documentation](https://developers.openai.com/codex/skills) for discovery locations and invocation behavior.
 
 ## Use
 
-Open the target repository in Codex App and explicitly invoke the appropriate manager:
+Invoke the creator anywhere Codex can write to the user skills directory:
+
+```text
+Use $symphony-team-creator to design a Codex team for this workflow: <description>
+```
+
+```text
+Use $symphony-team-creator to update $symphony-team-example as follows: <description>
+```
+
+Open a target project in Codex App before invoking a team manager:
 
 ```text
 Use $symphony-team-delivery to implement and review this repository task: <request>
@@ -64,7 +67,7 @@ Use $symphony-team-delivery to implement and review this repository task: <reque
 Use $symphony-team-speckit to deliver this feature through SpecKit: <request>
 ```
 
-Explicit invocation authorizes the manager to create the participant threads required by that workflow. It does not expand permission to publish or deploy changes.
+The creator first returns a draft and waits for explicit approval before creating or updating a team. Invoking a team authorizes its manager to create the participant threads required by that workflow; it does not expand permission to unrelated or external actions.
 
 ## Checkout behavior
 
@@ -103,6 +106,7 @@ Validate each package with the `quick_validate.py` script bundled with Codex's `
 ```bash
 python3 /path/to/skill-creator/scripts/quick_validate.py symphony-team-delivery
 python3 /path/to/skill-creator/scripts/quick_validate.py symphony-team-speckit
+python3 /path/to/skill-creator/scripts/quick_validate.py symphony-team-creator
 ```
 
 ## License
