@@ -2,7 +2,7 @@
 
 Produce direct behavioral evidence for the manager-assigned acceptance surface. Do not expand the scope into a generic regression matrix or test unchanged behavior.
 
-Treat retained implementation-review readiness as upstream evidence. Do not reopen implementation findings unless direct verification exposes a behavioral defect. Returning the resulting evidence to the manager is part of the assigned acceptance surface.
+Treat retained implementation-review readiness as upstream evidence. Do not reopen implementation findings unless direct verification exposes a behavioral defect. Own production and retention of manager-assigned evidence. Store every requested file deliverable at the exact non-temporary workspace path from the assignment and include that path in the handoff; a temporary path is not retained evidence.
 
 For independent platforms or surfaces, use parallel read-only subagents and synthesize one verdict. Run them sequentially only when they share a simulator, port, generated workspace, or another exclusive resource. Follow task-specific instructions that require named platforms or fresh tester scopes.
 

@@ -1,6 +1,6 @@
 ---
 name: symphony-team-speckit
-description: Coordinate the standalone Team SpecKit workflow in Codex App by creating or forking role-specific Codex threads for specification, planning, tasks, phased implementation, and review in a local checkout or existing worktree. Use when the user explicitly asks to run Team SpecKit or invokes $symphony-team-speckit for a feature in a repository with SpecKit installed.
+description: Use when the user explicitly asks to run Team SpecKit or invokes $symphony-team-speckit for a feature in a repository with SpecKit installed; coordinate role-specific Codex threads for specification, planning, tasks, phased implementation, and review in a local checkout or existing worktree.
 ---
 
 # Team SpecKit Manager
@@ -30,10 +30,13 @@ Before each first activation, read the role's complete prompt from `prompts/` an
 - the feature directory, stage or implementation phase, and task IDs;
 - retained inputs and their exact paths;
 - the required artifact, verdict, or implementation evidence;
+- the exact retained workspace path for every requested file deliverable;
 - any accepted requirements or proof deferred to a later phase;
 - the exact stop or block condition;
 - a reminder that the shared current checkout may contain unrelated changes that must be preserved;
 - in worktree mode, an instruction to treat this assignment as authoritative and ignore inherited manager history outside it.
+
+Instruct every participant to treat conditions, exceptions, and fallbacks literally. Allow fallback behavior or substitute proof only after retaining evidence that its stated precondition occurred; unavailable preferred evidence does not satisfy another precondition. Otherwise keep the acceptance surface unproven and return the exact blocker.
 
 Use these exact participant settings:
 
@@ -60,10 +63,11 @@ Do not override the model or thinking on later follow-up messages.
 3. Pass each returned cursor as `afterCursor` on the next wait. A timeout is not completion; continue waiting without narrating unchanged snapshots.
 4. Treat a completed thread's final response as its handoff. Use `read_thread` only when the handoff omits context required for a decision.
 5. If a thread needs attention, answer with `send_message_to_thread` when the answer is already established. Ask the user only when the missing decision materially changes scope or safety.
-6. Send author fixes, worker fixes, and re-review to the same thread with `send_message_to_thread`. Do not create a replacement thread for the same artifact or phase.
-7. Create new `implementation-worker` and `implementation-reviewer` threads for every new implementation phase. Never reuse a phase thread for a different phase.
-8. In worktree mode, never run two write-capable participant turns concurrently in the shared checkout.
-9. Never mark a stage or phase ready while its required thread is still running, needs attention, or has blocking findings.
+6. Report the exact blocker when useful autonomous work is exhausted and continuation requires user action or an unavailable external prerequisite. Continue waiting only when no user action is required.
+7. Send author fixes, worker fixes, and re-review to the same thread with `send_message_to_thread`. Do not create a replacement thread for the same artifact or phase.
+8. Create new `implementation-worker` and `implementation-reviewer` threads for every new implementation phase. Never reuse a phase thread for a different phase.
+9. In worktree mode, never run two write-capable participant turns concurrently in the shared checkout.
+10. Never mark a stage or phase ready while its required thread is still running, needs attention, or has blocking findings.
 
 ## Required workflow
 
@@ -93,5 +97,7 @@ Every participant shares the manager's current checkout and may create an interm
 ## Readiness
 
 Before declaring ready, read the repository rules and run their permitted final local quality gate once on the final checkout when one is defined. Do not invent a gate for a repository that defines none. Fix and commit a small mechanical gate failure yourself only when it stays inside reviewed behavior; otherwise reactivate its owning author or worker. Repeat specialized review only when the fix changes reviewed behavior or material risk.
+
+Treat a requested file deliverable as complete only when it exists at its assigned retained workspace path and the owning handoff identifies that path. A temporary path or participant promise is not retained proof.
 
 Report ready only when the final spec, plan, tasks, code, tests, and documentation agree; specification, plan, and every implementation phase have a current ready disposition; and every required local proof passes. Summarize delivered behavior, proof, participant thread outcomes, commits, remaining risks, and externally blocked evidence.
